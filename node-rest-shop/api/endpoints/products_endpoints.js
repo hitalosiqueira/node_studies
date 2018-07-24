@@ -26,7 +26,7 @@ endpoints.get('/:productId', (req, res, next) => {
                 res.status(200).json(response);
             }else{
                 res.status(404).json({
-                    message: "Not found essa porra"
+                    message: "Not found"
                 });
             }
         })
