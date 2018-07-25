@@ -100,6 +100,20 @@ app.patch('/todos/:id', (req, res) => {
     });
 });
 
+app.post('/users', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        res.header('Authorization', token).send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+
+});
+
 app.listen(3000, () => {
     console.log("server started on port 3000");
 });
