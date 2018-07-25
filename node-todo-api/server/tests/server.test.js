@@ -1,19 +1,23 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectId} = require('mongodb');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
 const todos = [{
+    _id: new ObjectId(),
     text: 'First test todo'
 }, {
+    _id: new ObjectId(),
     text: 'Second test todo'
 }];
 
 beforeEach((done) => {
     Todo.remove({}).then(() => {
        Todo.insertMany(todos);
-    }).then(() => {
+    })
+    .then(() => {
         done();
     });
 });
@@ -68,7 +72,6 @@ describe('GET /todos', () => {
     it('should return all todos', (done) => {
         request(app)
             .get('/todos')
-            .send()
             .expect(200)
             .expect((res) => {
                 expect(res.body.docs.length).toBe(2);
@@ -89,4 +92,33 @@ describe('GET /todos', () => {
                 });
             });
     });
+});
+
+describe('GET /todos/:id', () => {
+
+    it('should return todo by id', (done) => {
+        request(app)
+            .get(`/todos/${todos[0]._id}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.doc.text).toBe(todos[0].text);
+            })
+            .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        request(app)
+            .get(`/todos/5b57c58c7121544f7d242978`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 400 if id is invalid', (done) => {
+        request(app)
+            .get(`/todos/123`)
+            .expect(400)
+            .end(done);
+    });
+
+
 });
