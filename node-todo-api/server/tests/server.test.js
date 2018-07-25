@@ -120,5 +120,30 @@ describe('GET /todos/:id', () => {
             .end(done);
     });
 
+});
 
+describe('DELETE /todos/:id', () =>{
+    it('should delete a todo', (done) => {
+        request(app)
+            .delete(`/todos/${todos[0]._id}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.doc.text).toBe(todos[0].text);
+            })
+            .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        request(app)
+            .delete(`/todos/5b57c58c7121544f7d242978`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 400 if id is invalid', (done) => {
+        request(app)
+            .delete(`/todos/123`)
+            .expect(400)
+            .end(done);
+    });
 });

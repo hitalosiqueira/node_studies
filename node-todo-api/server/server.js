@@ -40,7 +40,7 @@ app.get('/todos/:id', (req, res) => {
     }
 
     Todo.findById(id).then((doc) => {
-        
+
         if(!doc){
             return res.status(404).send();
         }
@@ -50,6 +50,24 @@ app.get('/todos/:id', (req, res) => {
         res.status(400).send();
     });
 
+});
+
+app.delete('/todos/:id', (req, res) => {
+    const id = req.params.id;
+
+    if(!ObjectId.isValid(id)){
+        return res.status(400).send();
+    }
+
+    Todo.findByIdAndRemove(id).then((doc) => {
+        if(!doc){
+            return res.status(404).send();
+        }
+
+        res.send({doc});
+    }).catch((err) => {
+        res.status(400).send();
+    });
 });
 
 app.listen(3000, () => {
