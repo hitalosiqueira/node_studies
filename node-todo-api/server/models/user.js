@@ -47,7 +47,7 @@ UserSchema.pre('save', function(next){
 });
 
 function generateAuthToken() {
-    var access = 'Authorization';
+    var access = 'authorization';
     var token = jwt.sign({_id: this._id, access}, 'abc123');
 
     this.tokens.push({access, token});
@@ -91,7 +91,7 @@ function findByToken(token) {
     return this.findOne({
         '_id': decoded._id,
         'tokens.token': token,
-        'tokens.access': 'Authorization'
+        'tokens.access': 'authorization'
     });
 }
 

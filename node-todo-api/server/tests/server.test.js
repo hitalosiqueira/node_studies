@@ -175,7 +175,7 @@ describe('GET /users/me', () => {
     it('should return the user if athentication is ok', (done) => {
         request(app)
             .get('/users/me')
-            .set('Authorization', users[0].tokens[0].token)
+            .set('authorization', users[0].tokens[0].token)
             .expect(200)
             .expect((res) => {
                 expect(res.body._id).toBe(users[0]._id.toHexString());
@@ -232,6 +232,41 @@ describe('POST /users', () => {
             .send(user)
             .expect(400)
             .end(done)
+    });
+});
+
+describe('POST /users/login', () => {
+    it('should login user and return token', (done) => {
+        user = {
+            email: users[0].email,
+            password: users[0].password
+        }
+        
+        request(app)
+            .post('/users/login')
+            .send(user)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body._id).toBe(users[0]._id.toHexString());
+                expect(res.headers['authorization']).toExist();
+            })
+            .end(done);
+    });
+
+    it('should not login', (done) => {
+        user = {
+            email: users[0].email,
+            password: 'wrongpass'
+        }
+        
+        request(app)
+            .post('/users/login')
+            .send(user)
+            .expect(401)
+            .expect((res) => {
+                expect(res.headers['authorization']).toNotExist();
+            })
+            .end(done);
     });
 });
 
