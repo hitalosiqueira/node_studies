@@ -16,6 +16,7 @@ describe('POST /todos', () => {
         request(app)
             .post('/todos')
             .send({text})
+            .set('authorization', users[0].tokens[0].token)
             .expect(200)
             .expect((res) => {
                 expect(res.body.text).toBe(text);
@@ -38,6 +39,7 @@ describe('POST /todos', () => {
         request(app)
             .post('/todos')
             .send()
+            .set('authorization', users[0].tokens[0].token)        
             .expect(400)
             .end((err, res) => {
                 if (err) {
@@ -59,11 +61,11 @@ describe('GET /todos', () => {
     it('should return all todos', (done) => {
         request(app)
             .get('/todos')
+            .set('authorization', users[0].tokens[0].token)
             .expect(200)
             .expect((res) => {
-                expect(res.body.docs.length).toBe(2);
+                expect(res.body.docs.length).toBe(1);
                 expect(res.body.docs[0].text).toBe(todos[0].text);
-                expect(res.body.docs[1].text).toBe(todos[1].text);
             })
             .end((err, res) => {
                 if (err){
@@ -85,6 +87,7 @@ describe('GET /todos/:id', () => {
     it('should return todo by id', (done) => {
         request(app)
             .get(`/todos/${todos[0]._id}`)
+            .set('authorization', users[0].tokens[0].token)
             .expect(200)
             .expect((res) => {
                 expect(res.body.doc.text).toBe(todos[0].text);
@@ -95,6 +98,7 @@ describe('GET /todos/:id', () => {
     it('should return 404 if todo not found', (done) => {
         request(app)
             .get(`/todos/5b57c58c7121544f7d242978`)
+            .set('authorization', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     });
@@ -102,7 +106,16 @@ describe('GET /todos/:id', () => {
     it('should return 400 if id is invalid', (done) => {
         request(app)
             .get(`/todos/123`)
+            .set('authorization', users[0].tokens[0].token)
             .expect(400)
+            .end(done);
+    });
+
+    it('should not return a todo owned by another user', (done) => {
+        request(app)
+            .get(`/todos/${todos[1]._id}`)
+            .set('authorization', users[0].tokens[0].token)
+            .expect(404)
             .end(done);
     });
 });
@@ -111,6 +124,7 @@ describe('DELETE /todos/:id', () =>{
     it('should delete a todo', (done) => {
         request(app)
             .delete(`/todos/${todos[0]._id}`)
+            .set('authorization', users[0].tokens[0].token)
             .expect(200)
             .expect((res) => {
                 expect(res.body.doc.text).toBe(todos[0].text);
@@ -121,6 +135,7 @@ describe('DELETE /todos/:id', () =>{
     it('should return 404 if todo not found', (done) => {
         request(app)
             .delete(`/todos/5b57c58c7121544f7d242978`)
+            .set('authorization', users[0].tokens[0].token)
             .expect(404)
             .end(done);
     });
@@ -128,6 +143,7 @@ describe('DELETE /todos/:id', () =>{
     it('should return 400 if id is invalid', (done) => {
         request(app)
             .delete(`/todos/123`)
+            .set('authorization', users[0].tokens[0].token)
             .expect(400)
             .end(done);
     });
@@ -142,6 +158,7 @@ describe('PATCH /todo/:id', () => {
 
         request(app)
             .patch(`/todos/${todos[0]._id}`)
+            .set('authorization', users[0].tokens[0].token)
             .send(body)
             .expect(200)
             .expect((res) => {
@@ -157,9 +174,9 @@ describe('PATCH /todo/:id', () => {
             completed: false,
             text: 'lulululu'
         }
-
         request(app)
             .patch(`/todos/${todos[1]._id}`)
+            .set('authorization', users[1].tokens[0].token)
             .send(body)
             .expect(200)
             .expect((res) => {
@@ -266,6 +283,17 @@ describe('POST /users/login', () => {
             .expect((res) => {
                 expect(res.headers['authorization']).toNotExist();
             })
+            .end(done);
+    });
+});
+
+describe('DELETE /users/me/token', () => {
+    it('should login user and return token', (done) => {
+        
+        request(app)
+            .delete('/users/me/token')
+            .set('authorization', users[0].tokens[0].token)
+            .expect(200)
             .end(done);
     });
 });

@@ -95,9 +95,18 @@ function findByToken(token) {
     });
 }
 
+function removeToken(token){
+    return this.update({
+        $pull: {
+            tokens: {token}
+        }
+    });
+}
+
 UserSchema.methods = {
     generateAuthToken,
-    toJSON
+    toJSON,
+    removeToken
 }
 
 UserSchema.statics = {
