@@ -22,10 +22,10 @@ const todos = [{
 const users = [{
     _id: userOneId,
     email: 'hsiqueira@gmail.com',
-    password: 'abc1234',
+    password: 'abc123',
     tokens: [{
        access: 'authorization',
-       token: jwt.sign({_id: userOneId, access: 'authorization'}, 'abc123')
+       token: jwt.sign({_id: userOneId, access: 'authorization'}, process.env.JWT_SECRET)
     }]
 },{
     _id: userTwoId,
@@ -33,7 +33,7 @@ const users = [{
     password: 'lalalelele',
     tokens: [{
         access: 'authorization',
-        token: jwt.sign({_id: userTwoId, access: 'authorization'}, 'abc123')
+        token: jwt.sign({_id: userTwoId, access: 'authorization'}, process.env.JWT_SECRET)
      }]
 }];
 

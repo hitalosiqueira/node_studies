@@ -48,7 +48,7 @@ UserSchema.pre('save', function(next){
 
 function generateAuthToken() {
     var access = 'authorization';
-    var token = jwt.sign({_id: this._id, access}, 'abc123');
+    var token = jwt.sign({_id: this._id, access}, process.env.JWT_SECRET);
 
     this.tokens.push({access, token});
 
@@ -83,7 +83,7 @@ function findByToken(token) {
     var decoded;
 
     try {
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (e) {
         return Promise.reject();
     }
